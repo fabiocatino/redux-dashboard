@@ -1,11 +1,11 @@
+import { faker } from "@faker-js/faker";
 import Button from "atoms/Button";
 import FormInput from "atoms/FormInput";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { Buttons, Container, FieldsContainer, FormContainer } from "./styles";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addUser, editUser } from "store/userSlice";
-import { faker } from "@faker-js/faker";
+import { Buttons, Container, FieldsContainer, FormContainer } from "./styles";
 
 type AddUserFormProps = {};
 
@@ -13,7 +13,6 @@ const AddUserForm = ({}: AddUserFormProps) => {
   const dispatch = useDispatch(),
     router = useRouter(),
     { id, name, email, username, city } = router.query,
-    users = useSelector((state: any) => state.user),
     [value, setValue] = useState({ name, email }),
     [error, setError] = useState<any>({});
 
@@ -72,19 +71,27 @@ const AddUserForm = ({}: AddUserFormProps) => {
           ...prevState,
           name: "Name is too short.",
         }));
-      }
+      } else if (!e.target.value.trim())
+        setError((prevState: any) => ({
+          ...prevState,
+          name: "Empty value",
+        }));
       setValue({ name: e.target.value, email: value.email });
-    } else if (e.target.type === "email") {
+    }
+
+    if (e.target.type === "email") {
       setError((prevState: any) => ({
         ...prevState,
         email: "",
       }));
+
       if (regex.test(e.target.value) === false) {
         setError((prevState: any) => ({
           ...prevState,
           email: "Invalid Email",
         }));
       }
+
       setValue({ name: value.name, email: e.target.value });
     }
   };
